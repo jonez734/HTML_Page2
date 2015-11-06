@@ -19,8 +19,9 @@
 // $Id$
 
 /**
- * The PEAR::HTML_Page2 package provides a simple interface for generating an XHTML compliant page
- * 
+ * The PEAR::HTML_Page2 package provides a simple interface for
+ * generating an XHTML compliant page
+ *
  * @category HTML
  * @package  HTML_Page2
  * @version  @package_version@
@@ -28,7 +29,6 @@
  * @license  http://www.php.net/license/3_0.txt PHP License 3.0
  * @author   Klaus Guenther <klaus@capitalfocus.org>
  */
-
 
 /**
  * Include HTML_Common class
@@ -47,8 +47,15 @@ class HTML_Page2_Frameset extends HTML_Common
     protected $_cols = [];
     protected $_type = '';
     protected $xhtml = false;
-    
-    public function HTML_Page2_Frameset($options = [])
+
+    /**
+     * __construct
+     *
+     * @param array $options Associative array
+     *
+     * @return HTML_Page2_Frameset
+     */
+    public function __construct($options = [])
     {
         if (isset($options['master'])) {
             $this->_master = $options['master'];
@@ -57,40 +64,78 @@ class HTML_Page2_Frameset extends HTML_Common
             $this->xhtml = $options['xhtml'];
         }
     } // end constructor
-    
+
+    /**
+     * Add rows
+     *
+     * @param array $rows Associative array describing rows to add.
+     *
+     * @return void
+     */
     public function addRows($rows = [])
     {
-        
+
         if (isset($this->_cols)) {
             $this->_cols = [];
         }
-        
+
         $this->_rows = $rows;
     } // end func addRows
-    
+
+    /**
+     * Add columns
+     *
+     * @param array $cols Associative array describing columns.
+     *
+     * @return void
+     */
     public function addColumns($cols = [])
     {
-        
+
         if (isset($this->_rows)) {
             $this->_rows = [];
         }
-        
+
         $this->_cols = $cols;
     } // end func addColumns
-    
+
+    /**
+     * Add frame.
+     *
+     * @param string $name   Name of frame
+     * @param string $source SRC attribute
+     * @param string $target target, optional, defaults to _self
+     *
+     * @return void
+     */
     public function addFrame($name, $source, $target = '_self')
     {
-        $this->$name = new HTML_Page2_Frameset_Frame(['name'   => $name, 
-                                                           'src'    => $source,
-                                                           'target' => $target
-                                                           ]);
+        $this->$name = new HTML_Page2_Frameset_Frame(
+            [
+                'name'   => $name,
+                'src'    => $source,
+                'target' => $target
+            ]
+        );
     } // end func addFrame
-    
+
+    /**
+     * Add a frameset.
+     *
+     * @param string $name Name of frameset to add.
+     *
+     * @return void
+     */
     public function addFrameset($name)
     {
         $this->$name = new HTML_Page2_Frameset();
     } // end func addFrame
-    
+
+    /**
+     * Get HTML for frame tag.
+     *
+     * @return string
+     */
     public function toHTML()
     {
         // get line endings
@@ -98,13 +143,13 @@ class HTML_Page2_Frameset extends HTML_Common
         $tab    = $this->_getTab();
         $tabs   = $this->_getTabs();
         $offset = $this->getTabOffset();
-        
+
         if ($this->xhtml === true) {
             $tagEnd = ' />';
         } else {
             $tagEnd = '>';
         }
-        
+
         if (count($this->_rows) > 0) {
             $type = 'rows';
             $sizesStr = implode(', ', $this->_rows);
@@ -112,12 +157,12 @@ class HTML_Page2_Frameset extends HTML_Common
             $type = 'cols';
             $sizesStr = implode(', ', $this->_cols);
         }
-        
+
         $strHtml  = $tabs . '<frameset ' . $type . '="' . $sizesStr . '">' . $lnEnd;
-        
+
         $type = '_' . $type;
         foreach (array_keys($this->$type) as $name) {
-            if(strtolower(get_class($this->$name)) == 'html_page2_frameset') {
+            if (strtolower(get_class($this->$name)) == 'html_page2_frameset') {
                 $this->$name->setTabOffset($offset + 1);
                 $this->$name->setTab($tab);
                 $this->$name->setLineEnd($lnEnd);
@@ -133,9 +178,9 @@ class HTML_Page2_Frameset extends HTML_Common
         if (!$this->_master) {
             $strHtml .= $tabs . '</frameset>' . $lnEnd;
         }
-        
+
         return $strHtml;
-        
+
     } // end func toHtml
 }
 ?>
